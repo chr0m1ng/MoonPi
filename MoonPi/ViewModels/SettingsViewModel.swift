@@ -14,7 +14,8 @@ final class SettingsViewModel {
     private let store = SettingsStore.shared
     
     var isTestingConnection = false
-    var connectionStatus: String? = nil
+    var testErrorDescription: String? = nil
+    var isTestSuccessful: Bool? = nil
     var hostname: String {
         get { store.hostname }
         set { store.hostname = newValue }
@@ -26,14 +27,25 @@ final class SettingsViewModel {
     var isTestDisabled: Bool {
         hostname.isEmpty || isTestingConnection
     }
+    var testConnectionIcon: String {
+        if testErrorDescription != nil || isTestSuccessful == false {
+            return "network.slash"
+        }
+        if isTestSuccessful == true {
+            return "checkmark.circle"
+        }
+        return "network"
+    }
     
     func testConnection() async {
         isTestingConnection = true
-        connectionStatus = nil
+        testErrorDescription = nil
+        isTestSuccessful = nil
         
         guard var components = URLComponents(string: hostname) else {
-            connectionStatus = "Invalid hostname"
+            testErrorDescription = "Invalid hostname"
             isTestingConnection = false
+            isTestSuccessful = false
             return
         }
         
@@ -43,8 +55,9 @@ final class SettingsViewModel {
         components.path.append("/health")
         
         guard let url = components.url else {
-            connectionStatus = "Invalid URL"
+            testErrorDescription = "Invalid URL"
             isTestingConnection = false
+            isTestSuccessful = false
             return
         }
         
@@ -56,13 +69,15 @@ final class SettingsViewModel {
             
             let (data, response) = try await URLSession.shared.data(for: req)
             if let http = response as? HTTPURLResponse, http.statusCode == 200 {
-                connectionStatus = "✅ Connected"
+                isTestSuccessful = true
             } else {
                 let body = String(data: data, encoding: .utf8) ?? "Unexpected response"
-                connectionStatus = "⚠️ \(body)"
+                testErrorDescription = body
+                isTestSuccessful = false
             }
         } catch {
-            connectionStatus = "❌ \(error.localizedDescription)"
+            testErrorDescription = error.localizedDescription
+            isTestSuccessful = false
         }
         isTestingConnection = false
     }

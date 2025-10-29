@@ -43,12 +43,12 @@ struct SettingsView: View {
                                 Text("Testing...")
                             }
                         } else {
-                            Label("Test Connection", systemImage: "network")
+                            Label("Test Connection", systemImage: model.testConnectionIcon)
                         }
                     }
                     .disabled(model.isTestDisabled)
                 } footer: {
-                    if let status = model.connectionStatus {
+                    if let status = model.testErrorDescription {
                         Text(status)
                             .foregroundStyle(.secondary)
                     }
