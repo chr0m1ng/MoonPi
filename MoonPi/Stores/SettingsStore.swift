@@ -30,7 +30,7 @@ final class SettingsStore {
     }
     
     init() {
-        hostname = UserDefaults.standard.string(forKey: Keys.hostname) ?? "moonpi.local"
+        hostname = UserDefaults.standard.string(forKey: Keys.hostname) ?? "moonet.local"
         apiKey = UserDefaults.standard.string(forKey: Keys.apiKey) ?? ""
     }
 }
