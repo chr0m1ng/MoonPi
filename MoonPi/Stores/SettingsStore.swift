@@ -11,7 +11,7 @@ import Observation
 @Observable
 final class SettingsStore {
     static let shared = SettingsStore()
-
+    
     private enum Keys {
         static let hostname = "hostname"
         static let apiKey = "apiKey"

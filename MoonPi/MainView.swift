@@ -37,7 +37,6 @@ struct MainView: View {
             MiniPlayerView(title: $title, channel: $channel, isPlaying: $isPlaying, thumbnail: $thumbnail)
                 .padding(.bottom, 60)
                 .padding(.horizontal, 20)
-            
         }
     }
 }

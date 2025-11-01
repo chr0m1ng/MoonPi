@@ -12,7 +12,7 @@ import Observation
 @MainActor
 final class SettingsViewModel {
     private let store = SettingsStore.shared
-    private let api = MoonetService.shared
+    private let healthApi = Health.shared
     
     var isTestingConnection = false
     var testErrorDescription: String? = nil
@@ -44,11 +44,10 @@ final class SettingsViewModel {
         isTestSuccessful = nil
         
         do {
-            let res = try await api.getStatus()
+            let res = try await healthApi.get()
             if res?.ok == true {
                 isTestSuccessful = true
             } else {
-                // Prefer server-provided error if available
                 testErrorDescription = res?.error ?? "Unexpected response"
                 isTestSuccessful = false
             }
@@ -58,49 +57,4 @@ final class SettingsViewModel {
         }
         isTestingConnection = false
     }
-    
-//    func testConnection() async {
-//        isTestingConnection = true
-//        testErrorDescription = nil
-//        isTestSuccessful = nil
-//        
-//        guard var components = URLComponents(string: hostname) else {
-//            testErrorDescription = "Invalid hostname"
-//            isTestingConnection = false
-//            isTestSuccessful = false
-//            return
-//        }
-//        
-//        if components.scheme == nil {
-//            components.scheme = "http"
-//        }
-//        components.path.append("/health")
-//        
-//        guard let url = components.url else {
-//            testErrorDescription = "Invalid URL"
-//            isTestingConnection = false
-//            isTestSuccessful = false
-//            return
-//        }
-//        
-//        do {
-//            var req = URLRequest(url: url, timeoutInterval: 6)
-//            if !apiKey.isEmpty {
-//                req.addValue(apiKey, forHTTPHeaderField: "x-api-key")
-//            }
-//            
-//            let (data, response) = try await URLSession.shared.data(for: req)
-//            if let http = response as? HTTPURLResponse, http.statusCode == 200 {
-//                isTestSuccessful = true
-//            } else {
-//                let body = String(data: data, encoding: .utf8) ?? "Unexpected response"
-//                testErrorDescription = body
-//                isTestSuccessful = false
-//            }
-//        } catch {
-//            testErrorDescription = error.localizedDescription
-//            isTestSuccessful = false
-//        }
-//        isTestingConnection = false
-//    }
 }
