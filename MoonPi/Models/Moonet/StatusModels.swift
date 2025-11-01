@@ -1,31 +1,9 @@
 //
-//  MoonetModels.swift
+//  Status.swift
 //  MoonPi
 //
-//  Created by Gabriel Santos on 30/10/25.
+//  Created by Gabriel Santos on 31/10/25.
 //
-
-import Foundation
-
-class ApiResponse<T: Decodable>: Decodable {
-    let ok: Bool
-    let data: T?
-    let error: String?
-    
-    private enum CodingKeys: String, CodingKey {
-        case ok, data, error
-    }
-    
-    required init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.ok = try container.decode(Bool.self, forKey: .ok)
-        self.data = try container.decodeIfPresent(T.self, forKey: .data)
-        self.error = try container.decodeIfPresent(String.self, forKey: .error)
-    }
-}
-
-class HealthResponse: Decodable {
-}
 
 class StatusResponse: Decodable {
     let pause: Bool
@@ -58,8 +36,4 @@ class StatusResponse: Decodable {
         self.playing = try container.decode(Bool.self, forKey: .playing)
         self.meta = try container.decodeIfPresent(Meta.self, forKey: .meta)
     }
-}
-
-class EmptyRequest: Codable {
-    
 }
