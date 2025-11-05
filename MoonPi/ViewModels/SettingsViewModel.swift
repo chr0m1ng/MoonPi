@@ -12,7 +12,7 @@ import Observation
 @MainActor
 final class SettingsViewModel {
     private let store = SettingsStore.shared
-    private let healthApi = Health.shared
+    private let healthApi = HealthApi.shared
     
     var isTestingConnection = false
     var testErrorDescription: String? = nil
@@ -42,17 +42,11 @@ final class SettingsViewModel {
         isTestingConnection = true
         testErrorDescription = nil
         isTestSuccessful = nil
-        
-        do {
-            let res = try await healthApi.get()
-            if res?.ok == true {
-                isTestSuccessful = true
-            } else {
-                testErrorDescription = res?.error ?? "Unexpected response"
-                isTestSuccessful = false
-            }
-        } catch {
-            testErrorDescription = error.localizedDescription
+        let res = await healthApi.get()
+        if res?.ok == true {
+            isTestSuccessful = true
+        } else {
+            testErrorDescription = res?.error ?? "Unexpected response"
             isTestSuccessful = false
         }
         isTestingConnection = false

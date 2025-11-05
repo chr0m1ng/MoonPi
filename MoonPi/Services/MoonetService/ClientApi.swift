@@ -8,10 +8,6 @@
 import Foundation
 import Observation
 
-enum ConnectionError: Error {
-    case invalidHostname
-    case requestFailed(response: String)
-}
 
 @Observable
 final class Client {
@@ -34,11 +30,14 @@ final class Client {
         endpoint: String,
         method: HttpMethod,
         body: REQ? = nil,
-        headers: [String: String] = [:]
+        headers: [String: String] = [:],
+        query: [String: String] = [:],
     ) async throws -> ApiResponse<RES>? {
         do {
             var url = try! getBaseUrl()
             url.append(path: endpoint)
+            let queryItems = query.map(URLQueryItem.init)
+            url.append(queryItems: queryItems)
             var urlRequest = URLRequest(url: url)
             urlRequest.httpMethod = method.rawValue
             
@@ -52,22 +51,17 @@ final class Client {
             for (key, value) in headers {
                 urlRequest.setValue(value, forHTTPHeaderField: key)
             }
-            
             if let body {
                 urlRequest.httpBody = try JSONEncoder().encode(body)
             }
-            print(urlRequest)
             let (data, _) = try await URLSession.shared.data(for: urlRequest)
-            if let rawString = String(data: data, encoding: .utf8) {
-                print("Raw Data as String:")
-                print(rawString)
-            } else {
-                print("Could not convert data to UTF-8 string.")
-                // You can also print the raw Data object if string conversion fails
-                print("Raw Data (binary representation):")
-                print(data)
-            }
-            let decoded = try JSONDecoder().decode(ApiResponse<RES>.self, from: data)
+//            if let rawString = String(data: data, encoding: .utf8) {
+//                print("Raw Data as String:")
+//                print(rawString)
+//            }
+            let decoder = JSONDecoder()
+            decoder.keyDecodingStrategy = .convertFromSnakeCase
+            let decoded = try decoder.decode(ApiResponse<RES>.self, from: data)
             return decoded
             
         } catch {
@@ -80,13 +74,15 @@ final class Client {
     func sendRequest<RES: Decodable>(
         endpoint: String,
         method: HttpMethod,
-        headers: [String: String] = [:]
+        headers: [String: String] = [:],
+        query: [String: String] = [:],
     ) async throws -> ApiResponse<RES>? {
         try await sendRequest(
             endpoint: endpoint,
             method: method,
             body: Optional<Data>.none as Data?, // type erased to keep body nil without constraining REQ
-            headers: headers
+            headers: headers,
+            query: query
         ) as ApiResponse<RES>?
     }
 }

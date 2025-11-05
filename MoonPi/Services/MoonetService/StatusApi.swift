@@ -5,12 +5,12 @@
 //  Created by Gabriel Santos on 31/10/25.
 //
 
-final class Status {
-    static let shared = Status()
+final class StatusApi {
+    static let shared = StatusApi()
     private let client: Client = .shared
     
-    func get() async throws -> ApiResponse<StatusResponse>? {
-        return try await client.sendRequest(
+    func get() async -> ApiResponse<StatusResponse>? {
+        return try? await client.sendRequest(
             endpoint: "/status",
             method: .GET
         )

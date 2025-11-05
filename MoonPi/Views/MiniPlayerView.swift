@@ -8,49 +8,59 @@
 import SwiftUI
 
 struct MiniPlayerView: View {
-    @Binding var title: String
-    @Binding var channel: String
-    @Binding var isPlaying: Bool
-    @Binding var thumbnail: String
+    @State private var model = PlayerViewModel.shared
     
     var body: some View {
         NavigationStack {
             HStack {
-                AsyncImage(url: URL(string: thumbnail)) { res in
-                    res.image?
+                AsyncImage(url: URL(string: model.video.thumbnail)) { res in
+                    (res.image ?? Image(systemName: "music.note"))
                         .resizable()
-                        .scaledToFit()
+                        .scaledToFill()
                 }
-                .frame(width: 80, height: 70)
-                .padding(.horizontal, 5)
-                .clipShape(.rect(corners: .concentric()))
+                .frame(width: 80, height: 80)
+                .clipShape(.rect(cornerRadius: 16))
+                .padding(5)
                 VStack (alignment: .leading) {
-                    Text(title)
+                    Text(model.video.title)
+                        .font(.headline)
                         .foregroundStyle(.primary)
                         .lineLimit(1)
                         .truncationMode(.tail)
-                    Text(channel)
+                    Text(model.video.channel)
+                        .font(.subheadline)
                         .foregroundStyle(.secondary)
                         .lineLimit(1)
                         .truncationMode(.tail)
                 }
                 Spacer()
-                Image(systemName: isPlaying ? "pause.fill" : "play.fill")
-                    .imageScale(.large)
-                    .padding(.trailing, 10)
+                Button {
+                    Task { await model.stop() }
+                } label: {
+                    Image(systemName: "stop.fill")
+                        .imageScale(.medium)
+                }
+                .disabled(model.processing)
+                .buttonStyle(.plain)
+                Button {
+                    Task { await model.togglePauseResume() }
+                } label: {
+                    Image(systemName: model.playingIcon)
+                        .imageScale(.large)
+                        .padding(.horizontal, 5)
+                }
+                .disabled(model.processing)
+                .buttonStyle(.plain)
             }
             .containerBackground(.clear, for: .navigation)
         }
         .frame(width: .infinity, height: 50)
-        .padding()
-        .glassEffect(in: .rect(cornerRadius: 16))
+        .padding(10)
+        .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .opacity(model.isIdle ? 0 : 1)
     }
 }
 
 #Preview {
-    @Previewable @State var title: String = "Interpol - All The Rage Back Home"
-    @Previewable @State var channel: String = "Interpol"
-    @Previewable @State var isPlaying: Bool = true
-    @Previewable @State var thumbnail: String = "https://img.youtube.com/vi/-u6DvRyyKGU/mqdefault.jpg"
-    return MiniPlayerView(title: $title, channel: $channel, isPlaying: $isPlaying, thumbnail: $thumbnail)
+    return MiniPlayerView()
 }

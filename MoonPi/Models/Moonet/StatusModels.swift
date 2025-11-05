@@ -5,35 +5,40 @@
 //  Created by Gabriel Santos on 31/10/25.
 //
 
+import Foundation
+
 class StatusResponse: Decodable {
     let pause: Bool
-    let volume: Double
-    let timePos: String?
-    let duration: String?
-    let mediaTitle: String?
+    var volume: Int8
+    var timePos: Double
+    let duration: Double
+    let mediaTitle: String
     let playing: Bool
+    let idleActive: Bool
     let meta: Meta?
     
-    private enum CodingKeys : String, CodingKey {
-        case pause, volume, timePos = "time-pos", duration
-        case mediaTitle = "media-title", playing, meta
-    }
-    
-    class Meta: Decodable {
+    internal class Meta: Decodable {
         let thumbnail: String
         let id: String
         let channel: String
         let url: String
     }
     
-    required init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.pause = try container.decode(Bool.self, forKey: .pause)
-        self.volume = try container.decode(Double.self, forKey: .volume)
-        self.timePos = try container.decodeIfPresent(String.self, forKey: .timePos)
-        self.duration = try container.decodeIfPresent(String.self, forKey: .duration)
-        self.mediaTitle = try container.decodeIfPresent(String.self, forKey: .mediaTitle)
-        self.playing = try container.decode(Bool.self, forKey: .playing)
-        self.meta = try container.decodeIfPresent(Meta.self, forKey: .meta)
+    static var empty: StatusResponse {
+        let jsonString = """
+            {
+                "pause": false,
+                "volume": 0,
+                "time_pos": 0,
+                "duration": 0,
+                "playing": false,
+                "media_title": "",
+                "idle_active": true
+            }
+            """
+        let jsonData = jsonString.data(using: .utf8)!
+        let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
+        return try! decoder.decode(StatusResponse.self, from: jsonData)
     }
 }
