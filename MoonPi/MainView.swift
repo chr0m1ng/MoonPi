@@ -14,6 +14,7 @@ enum AppTab: Hashable {
 struct MainView: View {
     @State private var selectedTab: AppTab = .home
     @State private var player = PlayerViewModel.shared
+    @State private var isFullPlayerPresent = false
     
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -28,6 +29,9 @@ struct MainView: View {
                             .padding(.horizontal, 20)
                             .padding(.bottom, 8)
                             .transition(.move(edge: .bottom).combined(with: .opacity))
+                            .onTapGesture {
+                                isFullPlayerPresent = true
+                            }
                     }
                 }
             }
@@ -43,6 +47,10 @@ struct MainView: View {
                         .navigationTitle("Search")
                 }
             }
+        }
+        .sheet(isPresented: $isFullPlayerPresent) {
+            FullPlayerView()
+                .presentationDetents([.large])
         }
         .task { player.startRefreshing() }
         .onDisappear { player.stopRefreshing() }
