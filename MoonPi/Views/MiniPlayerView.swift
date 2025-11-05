@@ -11,53 +11,50 @@ struct MiniPlayerView: View {
     @State private var model = PlayerViewModel.shared
     
     var body: some View {
-        NavigationStack {
-            HStack {
-                AsyncImage(url: URL(string: model.video.thumbnail)) { res in
-                    (res.image ?? Image(systemName: "music.note"))
-                        .resizable()
-                        .scaledToFill()
-                }
-                .frame(width: 80, height: 80)
-                .clipShape(.rect(cornerRadius: 16))
-                .padding(5)
-                VStack (alignment: .leading) {
-                    Text(model.video.title)
-                        .font(.headline)
-                        .foregroundStyle(.primary)
-                        .lineLimit(1)
-                        .truncationMode(.tail)
-                    Text(model.video.channel)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
-                        .truncationMode(.tail)
-                }
-                Spacer()
-                Button {
-                    Task { await model.stop() }
-                } label: {
-                    Image(systemName: "stop.fill")
-                        .imageScale(.medium)
-                }
-                .disabled(model.processing)
-                .buttonStyle(.plain)
-                Button {
-                    Task { await model.togglePauseResume() }
-                } label: {
-                    Image(systemName: model.playingIcon)
-                        .imageScale(.large)
-                        .padding(.horizontal, 5)
-                }
-                .disabled(model.processing)
-                .buttonStyle(.plain)
+        HStack {
+            AsyncImage(url: URL(string: model.video.thumbnail)) { res in
+                (res.image ?? Image(systemName: "music.note"))
+                    .resizable()
+                    .scaledToFill()
             }
-            .containerBackground(.clear, for: .navigation)
+            .frame(width: 80, height: 60)
+            .clipShape(.rect(cornerRadius: 16))
+            .padding(5)
+            VStack (alignment: .leading) {
+                Text(model.video.title)
+                    .font(.headline)
+                    .foregroundStyle(.primary)
+                    .lineLimit(1)
+                    .truncationMode(.tail)
+                Text(model.video.channel)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                    .truncationMode(.tail)
+            }
+            Spacer()
+            Button {
+                Task { await model.stop() }
+            } label: {
+                Image(systemName: "stop.fill")
+                    .imageScale(.medium)
+            }
+            .disabled(model.processing)
+            .buttonStyle(.plain)
+            Button {
+                Task { await model.togglePauseResume() }
+            } label: {
+                Image(systemName: model.playingIcon)
+                    .imageScale(.large)
+                    .padding(.horizontal, 5)
+            }
+            .disabled(model.processing)
+            .buttonStyle(.plain)
         }
-        .frame(width: .infinity, height: 50)
-        .padding(10)
-        .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-        .opacity(model.isIdle ? 0 : 1)
+        .containerBackground(.clear, for: .navigation)
+        .padding(.horizontal, 20)
+        .padding(.vertical, 5)
+        .glassEffect()
     }
 }
 
