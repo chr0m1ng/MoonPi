@@ -18,7 +18,7 @@ struct VideoListView: View {
     
     var body: some View {
         List(Array(model.videos.enumerated()), id: \.element.meta.id) { index, video in
-            HStack {
+            HStack (alignment: .center, spacing: 20) {
                 ThumbnailView(
                     thumbnail: video.meta.thumbnail, width: 100, height: 80
                 )
