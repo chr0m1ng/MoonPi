@@ -29,10 +29,15 @@ struct GalleryView<Destination: View>: View {
                 ForEach(videos, id: \.meta.id) { video in
                     VStack (alignment: .leading) {
                         AsyncImage(url: URL(string: video.meta.thumbnail)) { res in
-                            res.image?
-                                .resizable()
-                                .scaledToFit()
-                                .clipShape(.rect(cornerRadius: 25))
+                            if let img = res.image {
+                                img
+                                    .resizable()
+                                    .scaledToFit()
+                                    .clipShape(.rect(cornerRadius: 25))
+                            } else {
+                                ProgressView()
+                            }
+                            
                         }
                         .frame(minWidth: 120, minHeight: 120, maxHeight: 150, alignment: .center)
                         Text(video.title)

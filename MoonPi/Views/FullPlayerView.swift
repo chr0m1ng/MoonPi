@@ -85,6 +85,7 @@ struct FullPlayerView: View {
                         Slider(value: $model.video.volume, in: 0.0...100, step: 1) { editing in
                             if editing {
                                 model.blockUpdate = true
+                                model.processing = true
                             }
                             if !editing {
                                 Task { await model.changeVolume() }

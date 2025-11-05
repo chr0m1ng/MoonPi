@@ -21,11 +21,15 @@ struct VideoListView: View {
             List(Array(model.videos.enumerated()), id: \.element.meta.id) { index, video in
                 HStack {
                     AsyncImage(url: URL(string: video.meta.thumbnail)) { res in
-                        res.image?
-                            .resizable()
-                            .scaledToFit()
-                            .backgroundStyle(.clear)
-                            .clipShape(.rect(cornerRadius: 25))
+                        if let img = res.image {
+                            img
+                                .resizable()
+                                .scaledToFit()
+                                .backgroundStyle(.clear)
+                                .clipShape(.rect(cornerRadius: 25))
+                        } else {
+                            ProgressView()
+                        }
                     }
                     .frame(minWidth: 80, minHeight: 80, maxHeight: 100, alignment: .center)
                     VStack (alignment: .leading) {
