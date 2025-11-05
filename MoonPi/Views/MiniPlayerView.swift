@@ -11,15 +11,11 @@ struct MiniPlayerView: View {
     @State private var model = PlayerViewModel.shared
     
     var body: some View {
-        HStack {
-            AsyncImage(url: URL(string: model.video.thumbnail)) { res in
-                (res.image ?? Image(systemName: "music.note"))
-                    .resizable()
-                    .scaledToFill()
-            }
-            .frame(width: 80, height: 60)
-            .clipShape(.rect(cornerRadius: 16))
-            .padding(5)
+        HStack (alignment: .center) {
+            ThumbnailView(
+                thumbnail: model.video.thumbnail,
+                width: 80, height: 60, cornerRadius: 16
+            )
             VStack (alignment: .leading) {
                 Text(model.video.title)
                     .font(.headline)
@@ -51,9 +47,8 @@ struct MiniPlayerView: View {
             .disabled(model.processing)
             .buttonStyle(.plain)
         }
-        .containerBackground(.clear, for: .navigation)
         .padding(.horizontal, 20)
-        .padding(.vertical, 5)
+        .padding(.vertical, 10)
         .glassEffect()
     }
 }

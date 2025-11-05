@@ -19,18 +19,9 @@ struct VideoListView: View {
     var body: some View {
         List(Array(model.videos.enumerated()), id: \.element.meta.id) { index, video in
             HStack {
-                AsyncImage(url: URL(string: video.meta.thumbnail)) { res in
-                    if let img = res.image {
-                        img
-                            .resizable()
-                            .scaledToFit()
-                            .backgroundStyle(.clear)
-                            .clipShape(.rect(cornerRadius: 25))
-                    } else {
-                        ProgressView()
-                    }
-                }
-                .frame(minWidth: 80, minHeight: 80, maxHeight: 100, alignment: .center)
+                ThumbnailView(
+                    thumbnail: video.meta.thumbnail, width: 100, height: 80
+                )
                 VStack (alignment: .leading) {
                     Text(video.title)
                         .font(.headline)
@@ -47,27 +38,25 @@ struct VideoListView: View {
                             .foregroundStyle(.secondary)
                     }
                 }
-                .contentShape(Rectangle())
                 .onAppear() {
                     Task { await model.loadMoreIfNeeded(index: index) }
                 }
             }
+            .contentShape(Rectangle())
             .onTapGesture {
                 Task { await model.play(video) }
             }
-            .listRowBackground(Color.clear)
         }
+        .contentMargins(.bottom, 88, for: .scrollContent)
         .refreshable(action: model.refresh)
         .navigationTitle(title)
         .scrollContentBackground(.hidden)
-        .padding(.bottom, 80)
         if model.isLoading {
             ProgressView()
-                .padding(.bottom, 80)
         }
     }
 }
 
 #Preview {
-    VideoListView("Favorites", HistoryApi.shared.list)
+    VideoListView("History", HistoryApi.shared.list)
 }

@@ -15,15 +15,10 @@ struct FullPlayerView: View {
             ProgressView()
         } else {
             VStack (alignment: .center, spacing: 40) {
-                AsyncImage(url: URL(string: model.video.thumbnail)) { res in
-                    res.image?
-                        .resizable()
-                        .scaledToFit()
-                        .backgroundStyle(.clear)
-                        .clipShape(.rect(cornerRadius: 25))
-                }
-                .frame(minWidth: 200, minHeight: 200, maxHeight: 200, alignment: .center)
-                .shadow(radius: 25)
+                ThumbnailView(
+                    thumbnail: model.video.thumbnail,
+                    width: 350, height: 200
+                )
                 Section {
                     VStack (alignment: .center, spacing: 10) {
                         Text(model.video.title)

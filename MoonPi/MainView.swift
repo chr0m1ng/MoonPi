@@ -22,6 +22,14 @@ struct MainView: View {
                     HomeView()
                         .navigationTitle("Home")
                 }
+                .safeAreaInset(edge: .bottom, spacing: 0) {
+                    if !player.isIdle {
+                        MiniPlayerView()
+                            .padding(.horizontal, 20)
+                            .padding(.bottom, 8)
+                            .transition(.move(edge: .bottom).combined(with: .opacity))
+                    }
+                }
             }
             Tab("Settings", systemImage: "gearshape.fill", value: .settings) {
                 NavigationStack {
@@ -34,15 +42,6 @@ struct MainView: View {
                     Text("Search")
                         .navigationTitle("Search")
                 }
-            }
-        }
-        .safeAreaInset(edge: .bottom, spacing: 0) {
-            if !player.isIdle {
-                MiniPlayerView()
-                    .padding(.horizontal, 20)
-                    .padding(.bottom, 60)
-                    .transition(.move(edge: .bottom).combined(with: .opacity))
-                    .zIndex(1)
             }
         }
         .task { player.startRefreshing() }

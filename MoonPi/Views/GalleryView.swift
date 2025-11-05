@@ -28,28 +28,21 @@ struct GalleryView<Destination: View>: View {
             LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: 10) {
                 ForEach(videos, id: \.meta.id) { video in
                     VStack (alignment: .leading) {
-                        AsyncImage(url: URL(string: video.meta.thumbnail)) { res in
-                            if let img = res.image {
-                                img
-                                    .resizable()
-                                    .scaledToFit()
-                                    .clipShape(.rect(cornerRadius: 25))
-                            } else {
-                                ProgressView()
-                            }
-                            
+                        ThumbnailView(
+                            thumbnail: video.meta.thumbnail, width: 170, height: 120
+                        )
+                        Section {
+                            Text(video.title)
+                                .font(.headline)
+                                .lineLimit(1)
+                                .truncationMode(.tail)
+                                .foregroundStyle(.primary)
+                            Text(video.meta.channel)
+                                .font(.subheadline)
+                                .lineLimit(1)
+                                .truncationMode(.tail)
+                                .foregroundStyle(.secondary)
                         }
-                        .frame(minWidth: 120, minHeight: 120, maxHeight: 150, alignment: .center)
-                        Text(video.title)
-                            .font(.headline)
-                            .lineLimit(1)
-                            .truncationMode(.tail)
-                            .foregroundStyle(.primary)
-                        Text(video.meta.channel)
-                            .font(.subheadline)
-                            .lineLimit(1)
-                            .truncationMode(.tail)
-                            .foregroundStyle(.secondary)
                     }
                     .contentShape(Rectangle())
                     .onTapGesture {
