@@ -8,25 +8,30 @@
 import SwiftUI
 
 struct FullPlayerView: View {
-    @State private var model = PlayerViewModel.shared
+    @Environment(VideoManager.self) private var videoManager
+    @State private var model: PlayerViewModel
+    
+    init(_ statusManager: StatusManager) {
+        _model = State(initialValue: PlayerViewModel(statusManager))
+    }
     
     var body: some View {
-        if model.video.title == "" {
+        if model.status.mediaTitle.isEmpty {
             ProgressView()
         } else {
             VStack (alignment: .center, spacing: 40) {
                 ThumbnailView(
-                    thumbnail: model.video.thumbnail,
+                    thumbnail: model.status.meta?.thumbnail,
                     width: 350, height: 200
                 )
                 Section {
                     VStack (alignment: .center, spacing: 10) {
-                        Text(model.video.title)
+                        Text(model.status.mediaTitle)
                             .font(.title2)
                             .bold()
                             .multilineTextAlignment(.leading)
                             .foregroundStyle(.primary)
-                        Text(model.video.channel)
+                        Text(model.status.meta?.channel ?? "")
                             .font(.title3)
                             .multilineTextAlignment(.leading)
                             .foregroundStyle(.secondary)
@@ -34,16 +39,18 @@ struct FullPlayerView: View {
                 }
                 Section {
                     VStack {
-                        Slider(value: $model.video.timePos, in: 0.0...model.video.duration)
-                            .disabled(true)
-                            .sliderThumbVisibility(.hidden)
-                            .tint(.gray)
+                        if model.status.duration != nil {
+                            Slider(value: $model.timePos, in: 0.0...model.status.duration!)
+                                .disabled(true)
+                                .sliderThumbVisibility(.hidden)
+                                .tint(.gray)
+                        }
                         HStack {
-                            Text(model.video.timePos.timeString)
+                            Text(model.timePos.timeString)
                                 .font(.subheadline)
                                 .foregroundStyle(.secondary)
                             Spacer()
-                            Text(model.video.duration.timeString)
+                            Text(model.status.duration?.timeString ?? "LIVE")
                                 .font(.subheadline)
                                 .foregroundStyle(.secondary)
                         }
@@ -52,39 +59,37 @@ struct FullPlayerView: View {
                 Section {
                     HStack (spacing: 50) {
                         Button {
-                            Task { await model.stop() }
+                            Task { await videoManager.stop() }
                         } label: {
                             Image(systemName: "stop.fill")
                                 .imageScale(.large)
                                 .font(.title3)
                         }
-                        .disabled(model.processing)
                         .buttonStyle(.plain)
                         Button {
-                            Task { await model.togglePauseResume() }
+                            Task { await videoManager.pauseOrResume(isPlaying: model.isPlaying) }
                         } label: {
                             Image(systemName: model.playingIcon)
                                 .imageScale(.large)
                                 .font(.largeTitle)
                         }
-                        .disabled(model.processing)
                         .buttonStyle(.plain)
-                        Button(" ") {}
-                            .hidden()
-                            .buttonStyle(.glass)
+                        Button {
+                            Task { await model.saveToFavorites() }
+                        } label: {
+                            Image(systemName: "star.fill")
+                                .imageScale(.large)
+                                .font(.title3)
+                        }
+                        .buttonStyle(.plain)
                     }
                 }
                 Section {
                     HStack (spacing: 10) {
                         Image(systemName: "speaker.fill")
-                        Slider(value: $model.video.volume, in: 0.0...100, step: 1) { editing in
-                            if editing {
-                                model.blockUpdate = true
-                                model.processing = true
-                            }
+                        Slider(value: $model.volume, in: 0.0...100, step: 1) { editing in
                             if !editing {
-                                Task { await model.changeVolume() }
-                                model.blockUpdate = false
+                                Task { await videoManager.volume(at: model.volume) }
                             }
                         }
                         .tint(.gray)
@@ -98,5 +103,5 @@ struct FullPlayerView: View {
 }
 
 #Preview {
-    FullPlayerView()
+    FullPlayerView(StatusManager())
 }

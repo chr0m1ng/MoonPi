@@ -11,7 +11,7 @@ class StatusResponse: Decodable {
     let pause: Bool
     var volume: Int8
     var timePos: Double
-    let duration: Double
+    let duration: Double?
     let mediaTitle: String
     let playing: Bool
     let idleActive: Bool

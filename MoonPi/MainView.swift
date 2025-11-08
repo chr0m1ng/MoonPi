@@ -12,8 +12,9 @@ enum AppTab: Hashable {
 }
 
 struct MainView: View {
+    @Environment(StatusManager.self) private var statusManager
+    @Environment(LoadingManager.self) private var loadingManager
     @State private var selectedTab: AppTab = .home
-    @State private var player = PlayerViewModel.shared
     @State private var isFullPlayerPresent = false
     
     var body: some View {
@@ -22,17 +23,6 @@ struct MainView: View {
                 NavigationStack {
                     HomeView()
                         .navigationTitle("Home")
-                }
-                .safeAreaInset(edge: .bottom, spacing: 0) {
-                    if !player.isIdle {
-                        MiniPlayerView()
-                            .padding(.horizontal, 20)
-                            .padding(.bottom, 8)
-                            .transition(.move(edge: .bottom).combined(with: .opacity))
-                            .onTapGesture {
-                                isFullPlayerPresent = true
-                            }
-                    }
                 }
             }
             Tab("Settings", systemImage: "gearshape.fill", value: .settings) {
@@ -43,20 +33,31 @@ struct MainView: View {
             }
             Tab("Search", systemImage: "magnifyingglass", value: .search, role: .search) {
                 NavigationStack {
-                    Text("Search")
+                    SearchView()
                         .navigationTitle("Search")
                 }
             }
         }
+        .loadingOverlay(loadingManager.isLoading)
         .sheet(isPresented: $isFullPlayerPresent) {
-            FullPlayerView()
+            FullPlayerView(statusManager)
                 .presentationDetents([.large])
         }
-        .task { player.startRefreshing() }
-        .onDisappear { player.stopRefreshing() }
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            if !statusManager.status.idleActive {
+                MiniPlayerView(statusManager)
+                    .padding(.horizontal, 20)
+                    .padding(.bottom, 60)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                    .onTapGesture {
+                        isFullPlayerPresent = true
+                    }
+            }
+        }
     }
 }
 
 #Preview {
     MainView()
+        .withAppEnvs()
 }

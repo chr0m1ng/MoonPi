@@ -80,7 +80,7 @@ final class Client {
         try await sendRequest(
             endpoint: endpoint,
             method: method,
-            body: Optional<Data>.none as Data?, // type erased to keep body nil without constraining REQ
+            body: Optional<Data>.none as Data?,
             headers: headers,
             query: query
         ) as ApiResponse<RES>?

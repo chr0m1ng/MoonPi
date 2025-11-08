@@ -10,6 +10,12 @@ import SwiftData
 
 @main
 struct MoonPiApp: App {
+    @Environment(\.scenePhase) private var scenePhase
+    
+    @State private var loadingManager = LoadingManager.shared
+    @State private var statusManager = StatusManager()
+    @State private var videoManager = VideoManager()
+    
     var sharedModelContainer: ModelContainer = {
         let schema = Schema()
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
@@ -24,6 +30,15 @@ struct MoonPiApp: App {
     var body: some Scene {
         WindowGroup {
             MainView()
+                .environment(loadingManager)
+                .environment(statusManager)
+                .environment(videoManager)
+                .onChange(of: scenePhase) { _, phase in
+                    switch phase {
+                    case .active: statusManager.start()
+                    default: statusManager.stop()
+                    }
+                }
         }
         .modelContainer(sharedModelContainer)
     }

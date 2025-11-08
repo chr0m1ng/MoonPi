@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct GalleryView<Destination: View>: View {
-    @State private var model = GalleryViewModel()
+    @Environment(LoadingManager.self) private var loading
+    private let controlApi = ControlApi.shared
     let title: String
     let destination: Destination
     let videos: [VideoItem]
@@ -26,7 +27,8 @@ struct GalleryView<Destination: View>: View {
             }
             .buttonStyle(.plain)
             LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: 10) {
-                ForEach(videos, id: \.meta.id) { video in
+                ForEach(videos.indices, id: \.self) { index in
+                    let video = videos[index]
                     VStack (alignment: .leading) {
                         ThumbnailView(
                             thumbnail: video.meta.thumbnail, width: 170, height: 120
@@ -46,7 +48,11 @@ struct GalleryView<Destination: View>: View {
                     }
                     .contentShape(Rectangle())
                     .onTapGesture {
-                        Task { await model.play(video) }
+                        Task {
+                            await loading.withLoading {
+                                _ = await controlApi.play(url: video.url)
+                            }
+                        }
                     }
                 }
             }

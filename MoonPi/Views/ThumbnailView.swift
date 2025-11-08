@@ -8,35 +8,45 @@
 import SwiftUI
 
 struct ThumbnailView: View {
-    @State var thumbnail: String
-    @State var width: CGFloat
-    @State var height: CGFloat
-    @State var cornerRadius: CGFloat = 25
+    var thumbnail: String?
+    var width: CGFloat
+    var height: CGFloat
+    var cornerRadius: CGFloat = 25
     
     var body: some View {
-        AsyncImage(url: URL(string: thumbnail)) { phase in
-            if let image = phase.image {
-                image
-                    .resizable()
-                    .scaledToFill()
-                    .backgroundStyle(.clear)
-                    .clipShape(.rect(cornerRadius: cornerRadius))
-            } else if phase.error != nil {
-                Image(systemName: "music.note")
-                    .resizable()
-                    .scaledToFit()
-                    .backgroundStyle(.clear)
+        ZStack {
+            if let url = thumbnail, let imageURL = URL(string: url) {
+                AsyncImage(url: imageURL) { phase in
+                    switch phase {
+                    case .empty:
+                        ProgressView()
+                    case .success(let image):
+                        image
+                            .resizable()
+                            .scaledToFill()
+                            .clipShape(.rect(cornerRadius: cornerRadius))
+                    case .failure:
+                        Image(systemName: "music.note")
+                            .resizable()
+                            .scaledToFit()
+                            .foregroundStyle(.secondary)
+                    @unknown default:
+                        EmptyView()
+                    }
+                }
             } else {
                 ProgressView()
             }
         }
-        .frame(width: width, height: height, alignment: .center)
+        .frame(width: width, height: height)
         .shadow(radius: 25)
     }
 }
 
 #Preview {
     ThumbnailView(
-        thumbnail: "https://img.youtube.com/vi/YzdvUS1ZxOc/mqdefault.jpg", width: 300, height: 200
+        thumbnail: "https://img.youtube.com/vi/YzdvUS1ZxOc/mqdefault.jpg",
+        width: 300,
+        height: 200
     )
 }

@@ -8,7 +8,9 @@
 import SwiftUI
 
 struct VideoListView: View {
+    @Environment(VideoManager.self) private var videoManager
     @State private var model: VideoListViewModel
+    
     let title: String
     
     init(_ title: String, _ fetcher: @escaping (Int8?, Int8?) async -> ApiResponse<VideoListResponse>?) {
@@ -17,7 +19,8 @@ struct VideoListView: View {
     }
     
     var body: some View {
-        List(Array(model.videos.enumerated()), id: \.element.meta.id) { index, video in
+        List(model.videos.indices, id: \.self) { index in
+            let video = model.videos[index]
             HStack (alignment: .center, spacing: 20) {
                 ThumbnailView(
                     thumbnail: video.meta.thumbnail, width: 100, height: 80
@@ -33,7 +36,7 @@ struct VideoListView: View {
                             .truncationMode(.tail)
                             .foregroundStyle(.secondary)
                         Spacer()
-                        Text(video.duration.timeString)
+                        Text(video.duration?.timeString ?? "LIVE")
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                     }
@@ -44,16 +47,18 @@ struct VideoListView: View {
             }
             .contentShape(Rectangle())
             .onTapGesture {
-                Task { await model.play(video) }
+                Task { await videoManager.play(video.url) }
             }
         }
+        .task() {
+            Task { await model.refresh() }
+        }
         .contentMargins(.bottom, 88, for: .scrollContent)
-        .refreshable(action: model.refresh)
+        .refreshable() {
+            Task { await model.refresh() }
+        }
         .navigationTitle(title)
         .scrollContentBackground(.hidden)
-        if model.isLoading {
-            ProgressView()
-        }
     }
 }
 
