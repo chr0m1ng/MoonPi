@@ -41,8 +41,8 @@ struct VideoListView: View {
                             .foregroundStyle(.secondary)
                     }
                 }
-                .onAppear() {
-                    Task { await model.loadMoreIfNeeded(index: index) }
+                .task {
+                    await model.loadMoreIfNeeded(index: index)
                 }
             }
             .contentShape(Rectangle())
@@ -50,7 +50,7 @@ struct VideoListView: View {
                 Task { await videoManager.play(video.url) }
             }
         }
-        .task() {
+        .task {
             Task { await model.refresh() }
         }
         .contentMargins(.bottom, 88, for: .scrollContent)

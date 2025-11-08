@@ -9,7 +9,6 @@ import SwiftUI
 import Combine
 
 struct SearchView: View {
-    @Environment(LoadingManager.self) private var loading
     @State private var model = SearchViewModel()
     @State private var debounceTask: Task<Void, Never>?
     
@@ -30,19 +29,13 @@ struct SearchView: View {
                     }
                     .onDelete { offSets in
                         Task {
-                            await loading.withLoading() {
-                                await model.removeEntries(at: offSets)
-                            }
+                            await model.removeEntries(at: offSets)
                         }
                     }
                 }
                 .contentMargins(.bottom, 90, for: .scrollContent)
-                .onAppear() {
-                    Task {
-                        await loading.withLoading() {
-                            await model.fetchHistory()
-                        }
-                    }
+                .task {
+                    await model.fetchHistory()
                 }
             } else {
                 VideoListView("Search", model.search)

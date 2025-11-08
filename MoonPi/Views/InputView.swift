@@ -19,9 +19,9 @@ struct InputView: View {
                 TextField("", text: $value)
                     .textInputAutocapitalization(.never)
                     .autocorrectionDisabled(autocorrectionDisabled)
-                    .onAppear(perform: {
+                    .onAppear {
                         UITextField.appearance().clearButtonMode = .whileEditing
-                    })
+                    }
             }
         }
         .navigationTitle(name)

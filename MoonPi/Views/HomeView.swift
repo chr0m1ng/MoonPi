@@ -23,8 +23,8 @@ struct HomeView: View {
         }
         .contentMargins(.bottom, 88, for: .scrollContent)
         .refreshable(action: model.refreshData)
-        .onAppear {
-            Task { await model.refreshData() }
+        .task {
+            await model.refreshData()
         }
     }
 }
