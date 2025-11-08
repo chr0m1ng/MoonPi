@@ -11,12 +11,13 @@ import Observation
 @Observable
 @MainActor
 final class HomeViewModel {
+    private let loadingManager = LoadingManager.shared
     private let historyApi = HistoryApi.shared
     private let favoriteApi = FavoriteApi.shared
     var history: [VideoItem] = []
     var favorites: [VideoItem] = []
     
-    func fetchHistory() async {
+    private func fetchHistory() async {
         let res = await historyApi.list(4)
         if res?.ok != true || res?.data?.items.isEmpty == true {
             return
@@ -24,7 +25,7 @@ final class HomeViewModel {
         history = res!.data!.items
     }
     
-    func fetchFavorites() async {
+    private func fetchFavorites() async {
         let res = await favoriteApi.list(4)
         if res?.ok != true || res?.data?.items.isEmpty == true {
             return
@@ -33,8 +34,10 @@ final class HomeViewModel {
     }
     
     func refreshData() async {
-        async let h: Void = fetchHistory()
-        async let f: Void = fetchFavorites()
-        _ = await (h, f)
+        await loadingManager.withLoading {
+            async let h: Void = fetchHistory()
+            async let f: Void = fetchFavorites()
+            _ = await (h, f)
+        }
     }
 }
