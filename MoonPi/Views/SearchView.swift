@@ -11,10 +11,11 @@ import Combine
 struct SearchView: View {
     @State private var model = SearchViewModel()
     @State private var debounceTask: Task<Void, Never>?
+    @State private var committedQuery: String = ""
     
     var body: some View {
         Group {
-            if !model.isSearching {
+            if committedQuery.isEmpty {
                 List {
                     ForEach(model.history.indices, id: \.self) { index in
                         let item = model.history[index]
@@ -38,20 +39,27 @@ struct SearchView: View {
                     await model.fetchHistory()
                 }
             } else {
-                VideoListView("Search", model.search)
+                VideoListView("Search", { limit, page in
+                    await model.search(query: committedQuery, limit, page)
+                }, skipLoading: true)
+                .id(committedQuery)
             }
         }
         .searchable(text: $model.searchText)
         .onChange(of: model.searchText) { _, newValue in
             debounceTask?.cancel()
-            if newValue.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                model.isSearching = false
+            let trimmed = newValue.trimmingCharacters(in: .whitespacesAndNewlines)
+            
+            if trimmed.isEmpty {
+                committedQuery = ""
                 return
             }
             debounceTask = Task {
                 try? await Task.sleep(nanoseconds: 500_000_000) // 0.5s
                 guard !Task.isCancelled else { return }
-                await MainActor.run { model.isSearching = true }
+                await MainActor.run {
+                    committedQuery = trimmed
+                }
             }
         }
     }

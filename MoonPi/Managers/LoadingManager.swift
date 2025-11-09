@@ -18,7 +18,10 @@ final class LoadingManager {
     func show() { counter += 1 }
     func hide() { counter = max(0, counter - 1) }
     
-    func withLoading<T>(_ work: () async throws -> T) async rethrows -> T {
+    func withLoading<T>(skip: Bool = false, _ work: () async throws -> T) async rethrows -> T {
+        if skip {
+            return try await work()
+        }
         show()
         defer { hide() }
         return try await work()

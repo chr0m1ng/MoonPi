@@ -16,7 +16,6 @@ final class SearchViewModel {
     private let searchApi = SearchApi.shared
     var searchText: String = ""
     var history: [String] = []
-    var isSearching: Bool = false
     
     func fetchHistory() async {
         await loadingManager.withLoading {
@@ -24,11 +23,11 @@ final class SearchViewModel {
         }
     }
     
-    func search(_ limit: Int8?, _ page: Int8?) async -> ApiResponse<VideoListResponse>? {
+    func search(query: String, _ limit: Int8?, _ page: Int8?) async -> ApiResponse<VideoListResponse>? {
         if searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             return nil
         }
-        return await loadingManager.withLoading {
+        return await loadingManager.withLoading(skip: true) {
             await searchApi.search(query: searchText, limit, page)
         }
     }

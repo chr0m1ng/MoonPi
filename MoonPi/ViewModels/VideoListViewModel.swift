@@ -33,8 +33,8 @@ final class VideoListViewModel {
         }
     }
     
-    func fetchVideos(append: Bool = false) async {
-        await loadingManager.withLoading {
+    func fetchVideos(append: Bool = false, skipLoading: Bool = false) async {
+        await loadingManager.withLoading(skip: skipLoading) {
             if !append {
                 nextPage = 0
             }
@@ -52,7 +52,7 @@ final class VideoListViewModel {
         }
     }
     
-    func refresh() async {
-        await fetchVideos()
+    func refresh(_ skipLoading: Bool = false) async {
+        await fetchVideos(skipLoading: skipLoading)
     }
 }

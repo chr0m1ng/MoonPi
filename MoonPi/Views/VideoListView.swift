@@ -12,10 +12,12 @@ struct VideoListView: View {
     @State private var model: VideoListViewModel
     
     let title: String
+    var skipLoading: Bool = false
     
-    init(_ title: String, _ fetcher: @escaping (Int8?, Int8?) async -> ApiResponse<VideoListResponse>?) {
+    init(_ title: String, _ fetcher: @escaping (Int8?, Int8?) async -> ApiResponse<VideoListResponse>?, skipLoading: Bool = false) {
         self.title = title
         self._model = State(initialValue: VideoListViewModel(fetcher: fetcher))
+        self.skipLoading = skipLoading
     }
     
     var body: some View {
@@ -51,7 +53,7 @@ struct VideoListView: View {
             }
         }
         .task {
-            Task { await model.refresh() }
+            Task { await model.refresh(skipLoading) }
         }
         .contentMargins(.bottom, 88, for: .scrollContent)
         .refreshable() {
