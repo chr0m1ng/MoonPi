@@ -29,7 +29,7 @@ struct MoonPiApp: App {
     
     var body: some Scene {
         WindowGroup {
-            MainView()
+            AppView()
                 .environment(loadingManager)
                 .environment(statusManager)
                 .environment(videoManager)

@@ -43,7 +43,7 @@ extension View {
 }
 
 #Preview {
-    MainView().withAppEnvs()
+    MainTabView().withAppEnvs()
 }
 
 

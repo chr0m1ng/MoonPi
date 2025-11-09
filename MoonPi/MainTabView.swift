@@ -1,5 +1,5 @@
 //
-//  MainView.swift
+//  MainTabView.swift
 //  MoonPi
 //
 //  Created by Gabriel Santos on 28/10/25.
@@ -11,7 +11,7 @@ enum AppTab: Hashable {
     case home, favorites, search, settings
 }
 
-struct MainView: View {
+struct MainTabView: View {
     @Environment(StatusManager.self) private var statusManager
     @Environment(LoadingManager.self) private var loadingManager
     @State private var selectedTab: AppTab = .home
@@ -38,7 +38,6 @@ struct MainView: View {
                 }
             }
         }
-        .loadingOverlay(loadingManager.isLoading)
         .sheet(isPresented: $isFullPlayerPresent) {
             FullPlayerView(statusManager)
                 .presentationDetents([.large])
@@ -47,7 +46,7 @@ struct MainView: View {
             if !statusManager.status.idleActive {
                 MiniPlayerView(statusManager)
                     .padding(.horizontal, 20)
-                    .padding(.bottom, 60)
+                    .padding(.bottom, 85)
                     .transition(.move(edge: .bottom).combined(with: .opacity))
                     .onTapGesture {
                         isFullPlayerPresent = true
@@ -58,6 +57,6 @@ struct MainView: View {
 }
 
 #Preview {
-    MainView()
+    MainTabView()
         .withAppEnvs()
 }
