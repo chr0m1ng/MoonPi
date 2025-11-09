@@ -46,7 +46,7 @@ struct MainTabView: View {
             if !statusManager.status.idleActive {
                 MiniPlayerView(statusManager)
                     .padding(.horizontal, 20)
-                    .padding(.bottom, 85)
+                    .padding(.bottom, 90)
                     .transition(.move(edge: .bottom).combined(with: .opacity))
                     .onTapGesture {
                         isFullPlayerPresent = true

@@ -16,7 +16,10 @@ final class Client {
     
     func getBaseUrl() throws -> URL {
         var components = URLComponents()
-        components.host = store.hostname.replacingOccurrences(of: "https://", with: "").replacingOccurrences(of: "http://", with: "")
+        components.host = store.hostname
+            .replacingOccurrences(of: "https://", with: "")
+            .replacingOccurrences(of: "http://", with: "")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
         if components.scheme == nil {
             components.scheme = store.hostname.contains("s://") ? "https" : "http"
         }
