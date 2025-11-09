@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct FullPlayerView: View {
+    @Environment(LoadingManager.self) private var loadingManager
     @Environment(VideoManager.self) private var videoManager
     @State private var model: PlayerViewModel
     
@@ -98,6 +99,9 @@ struct FullPlayerView: View {
                 }
             }
             .padding(20)
+            .loadingOverlay(loadingManager.isLoading)
+            .zIndex(2)
+            .ignoresSafeArea(.keyboard, edges: .all)
         }
     }
 }
