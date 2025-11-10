@@ -14,7 +14,7 @@ struct HomeView: View {
         ScrollView {
             VStack {
                 GalleryView(title: "Recently Played", destination: VideoListView("History", HistoryApi.shared.list), videos: model.history)
-                GalleryView(title: "Favorites", destination: VideoListView("History", FavoriteApi.shared.list), videos: model.favorites)
+                GalleryView(title: "Favorites", destination: VideoListView("Favorites", FavoriteApi.shared.list), videos: model.favorites)
                     .padding(.top, 20)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
