@@ -10,7 +10,7 @@ import SwiftUI
 struct GalleryView<Destination: View>: View {
     @Environment(LoadingManager.self) private var loading
     private let controlApi = ControlApi.shared
-    let title: String
+    let title: LocalizedStringKey
     let destination: Destination
     let videos: [VideoItem]
     
