@@ -76,9 +76,9 @@ struct FullPlayerView: View {
                         }
                         .buttonStyle(.plain)
                         Button {
-                            Task { await model.saveToFavorites() }
+                            Task { await model.toggleFavorite() }
                         } label: {
-                            Image(systemName: "star.fill")
+                            Image(systemName: model.favoriteIcon)
                                 .imageScale(.large)
                                 .font(.title3)
                         }
@@ -97,6 +97,9 @@ struct FullPlayerView: View {
                         Image(systemName: "speaker.wave.3.fill")
                     }
                 }
+            }
+            .task {
+                await model.checkIsFavorite()
             }
             .padding(20)
             .loadingOverlay(loadingManager.isLoading)

@@ -17,6 +17,15 @@ final class FavoriteApi {
         )
     }
     
+    func isFavorite(url: String) async -> Bool {
+        let res: ApiResponse<VideoItem>? = try? await client.sendRequest(
+            endpoint: "/favorite",
+            method: .GET,
+            query: ["url": url]
+        )
+        return res?.ok ?? false
+    }
+    
     func list(_ limit: Int8? = nil, _ page: Int8? = nil) async -> ApiResponse<VideoListResponse>? {
         var query: [String: String] = [:]
         if limit != nil {
