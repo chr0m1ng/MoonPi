@@ -30,7 +30,7 @@ struct SettingsView: View {
                             .foregroundStyle(.secondary)
                     }
                 }
-            }
+            }.disabled(model.demoMode)
             Section {
                 Button {
                     Task { await model.testConnection() }
@@ -51,6 +51,9 @@ struct SettingsView: View {
                     Text(status)
                         .foregroundStyle(.secondary)
                 }
+            }.disabled(model.demoMode)
+            Section {
+                Toggle("Demo Mode", isOn: $model.demoMode)
             }
         }
     }

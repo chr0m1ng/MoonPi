@@ -15,6 +15,7 @@ final class SettingsStore {
     private enum Keys {
         static let hostname = "hostname"
         static let apiKey = "apiKey"
+        static let demoMode = "demoMode"
     }
     
     var hostname: String {
@@ -29,8 +30,15 @@ final class SettingsStore {
         }
     }
     
+    var demoMode: Bool {
+        didSet {
+            UserDefaults.standard.set(demoMode, forKey: Keys.demoMode)
+        }
+    }
+    
     init() {
         hostname = UserDefaults.standard.string(forKey: Keys.hostname) ?? "moonet.local"
         apiKey = UserDefaults.standard.string(forKey: Keys.apiKey) ?? ""
+        demoMode = UserDefaults.standard.bool(forKey: Keys.demoMode)
     }
 }

@@ -36,6 +36,9 @@ final class Client {
         headers: [String: String] = [:],
         query: [String: String] = [:],
     ) async throws -> ApiResponse<RES>? {
+        if store.demoMode {
+            return DemoClient.request()
+        }
         do {
             var url = try! getBaseUrl()
             url.append(path: endpoint)

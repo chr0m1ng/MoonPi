@@ -14,8 +14,11 @@ final class HomeViewModel {
     private let loadingManager = LoadingManager.shared
     private let historyApi = HistoryApi.shared
     private let favoriteApi = FavoriteApi.shared
+    private let healthApi = HealthApi.shared
+    private let settingsStore = SettingsStore.shared
     var history: [VideoItem] = []
     var favorites: [VideoItem] = []
+    var isConnected: Bool = false
     
     private func fetchHistory() async {
         let res = await historyApi.list(4)
@@ -33,8 +36,17 @@ final class HomeViewModel {
         favorites = res!.data!.items
     }
     
+    func checkConnection() async {
+        if settingsStore.demoMode {
+            isConnected = true
+            return
+        }
+        isConnected = await healthApi.get()?.ok ?? false
+    }
+    
     func refreshData() async {
         await loadingManager.withLoading {
+            await checkConnection()
             await fetchHistory()
             await fetchFavorites()
         }

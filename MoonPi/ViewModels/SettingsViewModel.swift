@@ -25,6 +25,10 @@ final class SettingsViewModel {
         get { store.apiKey }
         set { store.apiKey = newValue }
     }
+    var demoMode: Bool {
+        get { store.demoMode }
+        set { store.demoMode = newValue }
+    }
     var isTestDisabled: Bool {
         hostname.isEmpty || isTestingConnection
     }
