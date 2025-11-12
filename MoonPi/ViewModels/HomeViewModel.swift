@@ -35,9 +35,8 @@ final class HomeViewModel {
     
     func refreshData() async {
         await loadingManager.withLoading {
-            async let h: Void = fetchHistory()
-            async let f: Void = fetchFavorites()
-            _ = await (h, f)
+            await fetchHistory()
+            await fetchFavorites()
         }
     }
 }
